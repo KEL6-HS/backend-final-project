@@ -1,84 +1,56 @@
-require("dotenv").config();
-
-const express = require("express");
-const { Sequelize } = require("sequelize");
+require('dotenv').config();
+const express = require('express');
+const sequelize = require('./database');
+const User = require('./models/user');
 
 const PORT = process.env.SERVER_PORT || 3000;
 
 class Server {
-	#expressApp;
+  #expressApp;
 
-	/**
-	 * @type {import("sequelize").Sequelize}
-	 */
-	static db;
+  constructor(routers = []) {
+    this.#expressApp = express();
+    this.#middleware();
+    this.#setupRouters(routers);
+  }
 
-	constructor(routers = []) {
-		this.#expressApp = express();
+  #middleware() {
+    this.#expressApp.use(express.urlencoded({ extended: true }));
+    this.#expressApp.use(express.json());
+  }
 
-		// Configuring middleware
-		this.#middleware();
+  #setupRouters(routers = []) {
+    routers.forEach((expressRouter) => {
+      this.#expressApp.use(expressRouter.router);
+    });
 
-		// Configuring routers
-		this.#setupRouters(routers);
+    this.#expressApp.get('/users', async (req, res) => {
+      try {
+        const users = await User.findAll();
+        res.json(users);
+      } catch (error) {
+        console.error('Failed to fetch users:', error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
+    });
+  }
 
-		// Configuring database
-		this.#setupDatabase();
-	}
+  async start() {
+    try {
+      await sequelize.authenticate();
+      console.log(`Database connected to ${process.env.DB_NAME}`);
 
-	// Private function for booting
-	#middleware() {
-		this.#expressApp.use(express.urlencoded({ extended: true }));
-		this.#expressApp.use(express.json());
-	}
+      // Sync models
+      await sequelize.sync();
 
-	// Setup for routers
-	#setupRouters(routers = []) {
-		routers.forEach((expressRouter) => {
-			this.#expressApp.use(expressRouter.router);
-		});
-	}
-
-	// Setup for database (static function so other file can use "db" easily)
-	#setupDatabase() {
-		Server.db = new Sequelize(
-			process.env.DB_NAME || "test_db",
-			process.env.DB_USERNAME || "test",
-			process.env.DB_PASSWORD || "",
-			{
-				host: process.env.DB_HOST || "localhost",
-				dialect: process.env.DB_TYPE || "mysql",
-			}
-		);
-
-		Server.db
-			.authenticate()
-			.then(() => {
-				console.log(`Database ${process.env.DB_NAME} connected!`);
-
-				// Sync the models
-				require("./models");
-
-				Server.db
-					.sync()
-					.then(() => {
-						console.log("Synchronize successfully!");
-					})
-					.catch((error) => {
-						console.error("Unable to synchronize models : ", error);
-					});
-			})
-			.catch((error) => {
-				console.error("Unable to connect to the database: ", error);
-			});
-	}
-
-	// Start the http service
-	start() {
-		this.#expressApp.listen(PORT, () => {
-			console.log(`Listening to port ${PORT}`);
-		});
-	}
+      // Start server
+      this.#expressApp.listen(PORT, () => {
+        console.log(`Server is running on http://localhost:${PORT}`);
+      });
+    } catch (error) {
+      console.error('Failed to connect to database:', error);
+    }
+  }
 }
 
 module.exports = Server;
