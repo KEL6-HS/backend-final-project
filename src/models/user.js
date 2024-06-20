@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
-const Server = require('../server');
+const sequelize = require('../database');
 
-const User = Server.db.define('user', {
+const User = sequelize.define('user', {
   email: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -48,8 +48,10 @@ const User = Server.db.define('user', {
     defaultValue: DataTypes.NOW,
   },
 }, {
-  tableName: 'users', // specify the table name
-  timestamps: true,   // enable created_at and updated_at timestamps
+  tableName: 'users',
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
 });
 
-module.exports = { User };
+module.exports = User;

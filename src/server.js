@@ -1,25 +1,16 @@
 require('dotenv').config();
-
 const express = require('express');
-const { Sequelize } = require('sequelize');
+const sequelize = require('./database');
+const User = require('./models/user');
 
 const PORT = process.env.SERVER_PORT || 3000;
 
 class Server {
   #expressApp;
 
-  /**
-   * @type {import('sequelize').Sequelize}
-   */
-  static db;
-
   constructor(routers = []) {
     this.#expressApp = express();
-
-    // Configuring middleware
     this.#middleware();
-
-    // Configuring routers (initial empty)
     this.#setupRouters(routers);
   }
 
@@ -32,39 +23,33 @@ class Server {
     routers.forEach((expressRouter) => {
       this.#expressApp.use(expressRouter.router);
     });
-  }
 
-  async #setupDatabase() {
-    Server.db = new Sequelize(
-		process.env.DB_NAME,
-		process.env.DB_USERNAME,
-		process.env.DB_PASSWORD,
-		{
-		  host: process.env.DB_HOST,
-		  dialect: process.env.DB_TYPE,
-		  port: process.env.DB_PORT,
-		  logging: console.log, // Enable logging for debugging
-		}
-	  );
-  
-	  try {
-		await Server.db.authenticate();
-		console.log(`Database ${process.env.DB_NAME} connected!`);
-  
-		// Sync the models
-		require('./models');
-		await Server.db.sync();
-		console.log('Synchronize successfully!');
-	  } catch (error) {
-		console.error('Unable to connect or synchronize models:', error);
-		throw error; // Rethrow the error to handle in main script
-	  }
-  }
-
-  start() {
-    this.#expressApp.listen(PORT, () => {
-      console.log(`Listening to port ${PORT}`);
+    this.#expressApp.get('/users', async (req, res) => {
+      try {
+        const users = await User.findAll();
+        res.json(users);
+      } catch (error) {
+        console.error('Failed to fetch users:', error);
+        res.status(500).json({ error: 'Internal server error' });
+      }
     });
+  }
+
+  async start() {
+    try {
+      await sequelize.authenticate();
+      console.log(`Database connected to ${process.env.DB_NAME}`);
+
+      // Sync models
+      await sequelize.sync();
+
+      // Start server
+      this.#expressApp.listen(PORT, () => {
+        console.log(`Server is running on http://localhost:${PORT}`);
+      });
+    } catch (error) {
+      console.error('Failed to connect to database:', error);
+    }
   }
 }
 
