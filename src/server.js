@@ -1,56 +1,69 @@
-require('dotenv').config();
-const express = require('express');
-const sequelize = require('./database');
-const User = require('./models/user');
+require("dotenv").config();
+
+const express = require("express");
+const sequelize = require("./database");
+const User = require("./models/user");
+const { authenticateToken } = require("./middleware/auth");
+
+const bodyParser = require("body-parser");
+const multer = require("multer");
+const upload = multer();
 
 const PORT = process.env.SERVER_PORT || 3000;
 
 class Server {
-  #expressApp;
+	#expressApp;
 
-  constructor(routers = []) {
-    this.#expressApp = express();
-    this.#middleware();
-    this.#setupRouters(routers);
-  }
+	constructor(routers = []) {
+		this.#expressApp = express();
+		this.#middleware();
+		this.#setupRouters(routers);
+	}
 
-  #middleware() {
-    this.#expressApp.use(express.urlencoded({ extended: true }));
-    this.#expressApp.use(express.json());
-  }
+	#middleware() {
+		this.#expressApp.use(bodyParser.urlencoded({ extended: true }));
+		this.#expressApp.use(bodyParser.json());
+		this.#expressApp.use(upload.array());
 
-  #setupRouters(routers = []) {
-    routers.forEach((expressRouter) => {
-      this.#expressApp.use(expressRouter.router);
-    });
+		// Auth setup
+		this.#expressApp.use(authenticateToken);
+	}
 
-    this.#expressApp.get('/users', async (req, res) => {
-      try {
-        const users = await User.findAll();
-        res.json(users);
-      } catch (error) {
-        console.error('Failed to fetch users:', error);
-        res.status(500).json({ error: 'Internal server error' });
-      }
-    });
-  }
+	#setupRouters(routers = []) {
+		routers.forEach((expressRouter) => {
+			this.#expressApp.use(expressRouter.router);
+		});
 
-  async start() {
-    try {
-      await sequelize.authenticate();
-      console.log(`Database connected to ${process.env.DB_NAME}`);
+		this.#expressApp.get("/users", async (req, res) => {
+			try {
+				const users = await User.findAll();
+				res.json(users);
+			} catch (error) {
+				console.error("Failed to fetch users:", error);
+				res.status(500).json({ error: "Internal server error" });
+			}
+		});
+	}
 
-      // Sync models
-      await sequelize.sync();
+	async start() {
+		try {
+			await sequelize.authenticate();
+			console.log(`Database connected to ${process.env.DB_NAME}`);
 
-      // Start server
-      this.#expressApp.listen(PORT, () => {
-        console.log(`Server is running on http://localhost:${PORT}`);
-      });
-    } catch (error) {
-      console.error('Failed to connect to database:', error);
-    }
-  }
+			// Sync models
+			await sequelize.sync({
+				// alter: true,
+				// force: true,
+			});
+
+			// Start server
+			this.#expressApp.listen(PORT, () => {
+				console.log(`Server is running on http://localhost:${PORT}`);
+			});
+		} catch (error) {
+			console.error("Failed to connect to database:", error);
+		}
+	}
 }
 
 module.exports = Server;

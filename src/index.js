@@ -1,22 +1,31 @@
 const {
-  // TestRouter,
-  // TestWithControllersRouter,
-  UserRouter,
+	// TestRouter,
+	// TestWithControllersRouter,
+	UserRouter,
+
+	ProductCategoryRouter,
+	ProductTagRouter,
+	ProductRouter,
 } = require("./routes");
 const Server = require("./server");
 
 async function main() {
-  const server = new Server([
-    // new TestRouter(),
-    // new TestWithControllersRouter(),
-    new UserRouter(),
-  ]);
+	const server = new Server([
+		// new TestRouter(),
+		// new TestWithControllersRouter(),
 
-  try {
-    await server.start();
-  } catch (error) {
-    console.error("Failed to initialize server:", error);
-  }
+		new UserRouter(),
+
+		new ProductCategoryRouter(),
+		new ProductTagRouter(),
+		new ProductRouter(),
+	]);
+
+	try {
+		await server.start();
+	} catch (error) {
+		console.error("Failed to initialize server:", error);
+	}
 }
 
 main();
