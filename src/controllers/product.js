@@ -44,7 +44,7 @@ module.exports = {
 		const id = req.params.id;
 		const data = await Products.findByPk(id, {});
 		if (!data)
-			return res.status(500).json({
+			return res.status(404).json({
 				errors: "Data tidak ditemukan",
 			});
 
@@ -102,7 +102,7 @@ module.exports = {
 
 		const data = await Products.findByPk(form.body.id);
 		if (!data)
-			return res.status(500).json({
+			return res.status(404).json({
 				errors: "Data tidak ditemukan",
 			});
 
@@ -131,7 +131,7 @@ module.exports = {
 
 		const data = await Products.findByPk(form.body.id);
 		if (!data)
-			return res.status(500).json({
+			return res.status(404).json({
 				errors: "Data tidak ditemukan",
 			});
 

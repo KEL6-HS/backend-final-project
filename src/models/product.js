@@ -45,6 +45,4 @@ const Products = sequelize.define("products", {
 	},
 });
 
-// Relationship
-
 module.exports = Products;

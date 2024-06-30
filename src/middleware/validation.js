@@ -1,8 +1,8 @@
 const { validateRequestAndExtract } = require("../helper/utils");
 
 module.exports = {
-	validateRegistration: (req, res, next) => {
-		const form = validateRequestAndExtract(req, {
+	validateRegistration: async (req, res, next) => {
+		const form = await validateRequestAndExtract(req, {
 			email: "required|email",
 			password: "required",
 			firstName: "required",
