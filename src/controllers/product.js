@@ -86,13 +86,14 @@ module.exports = {
 	 * @param {import("express").Response} res
 	 */
 	async update(req, res) {
-		const form = validateRequestAndExtract(req, {
+		const form = await validateRequestAndExtract(req, {
 			categoryId: "required|exists:products_categories,id",
 			tagId: "required|exists:products_tags,id",
 			name: "required",
 			img: "required",
 			price: "required",
 			description: "required",
+			id: "required",
 		});
 
 		if (!form.validate)
