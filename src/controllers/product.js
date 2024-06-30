@@ -121,7 +121,7 @@ module.exports = {
 	 * @param {import("express").Response} res
 	 */
 	async delete(req, res) {
-		const form = validateRequestAndExtract(req, {
+		const form = await validateRequestAndExtract(req, {
 			id: "required",
 		});
 
