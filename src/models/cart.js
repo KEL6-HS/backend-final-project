@@ -1,5 +1,6 @@
-const { DataTypes } = require("sequelize");
+const { DataTypes, BelongsTo } = require("sequelize");
 const sequelize = require("../database");
+const Product = require("./product");
 
 const Cart = sequelize.define(
     "cart",
@@ -16,6 +17,9 @@ const Cart = sequelize.define(
         product_id: {
             type: DataTypes.INTEGER,
             allowNull: false,
+            references: {
+                model: Product,
+            },
         },
         quantity: {
             type: DataTypes.INTEGER,
@@ -37,7 +41,12 @@ const Cart = sequelize.define(
         timestamps: true,
         createdAt: "created_at",
         updatedAt: "updated_at",
-    },
+    }
 );
+
+Cart.belongsTo(Product, {
+    foreignKey: "product_id",
+    as: "product_detail",
+});
 
 module.exports = Cart;

@@ -6,16 +6,18 @@ const ProductRouter = require("./product");
 
 const UserRouter = require("./user");
 
-const CartRouter = require("./cart"); 
+const CartRouter = require("./cart");
+const CheckoutRouter = require("./checkout");
 
 module.exports = {
-	// TestRouter,
-	// TestWithControllersRouter,
-	UserRouter,
+    // TestRouter,
+    // TestWithControllersRouter,
+    UserRouter,
 
-	CartRouter,
+    CartRouter,
+    CheckoutRouter,
 
-	ProductCategoryRouter,
-	ProductTagRouter,
-	ProductRouter,
+    ProductCategoryRouter,
+    ProductTagRouter,
+    ProductRouter,
 };
