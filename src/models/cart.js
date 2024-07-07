@@ -25,6 +25,11 @@ const Cart = sequelize.define(
             type: DataTypes.INTEGER,
             allowNull: false,
         },
+        is_payment: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            defaultValue: false,
+        },
         created_at: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,
@@ -34,6 +39,10 @@ const Cart = sequelize.define(
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,
             allowNull: false,
+        },
+        payment_at: {
+            type: DataTypes.DATE,
+            allowNull: true,
         },
     },
     {

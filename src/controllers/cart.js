@@ -95,11 +95,35 @@ module.exports = {
                 errors: "Akses tidak diberikan",
             });
 
-        // delete form.body.id;
+        delete form.body.id;
         await data.update(form.body);
 
         return res.json({
             message: "Berhasil mengubah card",
+        });
+    },
+
+    async payment(req, res) {
+        const { userId } = req.user;
+        const { cart_id, payment_at } = req.body;
+
+        const data = await Carts.findByPk(cart_id);
+        if (!data)
+            return res.status(404).json({
+                errors: "Data tidak ditemukan",
+            });
+        else if (userId !== data.user_id)
+            return res.status(403).json({
+                errors: "Akses tidak diberikan",
+            });
+
+        await data.update({
+            is_payment: true,
+            payment_at,
+        });
+
+        return res.json({
+            data,
         });
     },
 };

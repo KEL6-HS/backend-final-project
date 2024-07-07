@@ -14,6 +14,7 @@ class cartRouter {
     this.router.get("/cart/get/:id", cartController.show);
     this.router.delete("/cart/get/:id", cartController.delete);
     this.router.put("/cart/update", cartController.update);
+    this.router.put("/cart/payment", cartController.payment);
   }
 }
 
