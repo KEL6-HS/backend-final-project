@@ -126,4 +126,24 @@ module.exports = {
             data,
         });
     },
+
+    async orderHistory(req, res) {
+        const { userId } = req.user;
+        console.log(userId);
+        const data = await Carts.findAll({
+            where: {
+                user_id: userId,
+                is_payment: true,
+            },
+        });
+
+        if (data.length)
+            return res.json({
+                data,
+            });
+        else
+            return res.status(404).json({
+                errors: "user has not payment",
+            });
+    },
 };
