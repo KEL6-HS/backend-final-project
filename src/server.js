@@ -1,9 +1,11 @@
 require("dotenv").config();
 
 const express = require("express");
+const cors = require("cors");
 const sequelize = require("./database");
 const User = require("./models/user");
 const { authenticateToken } = require("./middleware/auth");
+const UserRouter = require("./routes/user");
 
 const bodyParser = require("body-parser");
 const multer = require("multer");
@@ -21,6 +23,7 @@ class Server {
 	}
 
 	#middleware() {
+		this.#expressApp.use(cors());
 		this.#expressApp.use(bodyParser.urlencoded({ extended: true }));
 		this.#expressApp.use(bodyParser.json());
 		this.#expressApp.use(upload.array());
