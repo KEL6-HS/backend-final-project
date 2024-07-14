@@ -1,6 +1,11 @@
 const jwt = require("jsonwebtoken");
 
-const ignoreMiddleware = ["/login", "/register"];
+const ignoreMiddleware = [
+	"/login",
+	"/register",
+	"/product/get",
+	"/product-category/get",
+];
 
 module.exports = {
 	authenticateToken: (req, res, next) => {
