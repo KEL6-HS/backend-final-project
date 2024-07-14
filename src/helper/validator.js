@@ -16,7 +16,7 @@ register(
 		const query = await sequelize.query(
 			{
 				query: `SELECT * FROM ${table} WHERE ${primaryKey} = ? LIMIT 1`,
-				values: [value],
+				values: [parseInt(value)],
 			},
 			{
 				type: QueryTypes.SELECT,

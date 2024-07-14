@@ -5,7 +5,6 @@ const {
 	filterModel,
 } = require("../helper/utils");
 const Products = require("../models/product");
-const ProductsCategory = require("../models/product_category");
 
 module.exports = {
 	/**

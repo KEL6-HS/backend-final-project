@@ -36,16 +36,6 @@ class Server {
 		routers.forEach((expressRouter) => {
 			this.#expressApp.use(expressRouter.router);
 		});
-
-		this.#expressApp.get("/users", async (req, res) => {
-			try {
-				const users = await User.findAll();
-				res.json(users);
-			} catch (error) {
-				console.error("Failed to fetch users:", error);
-				res.status(500).json({ error: "Internal server error" });
-			}
-		});
 	}
 
 	async start() {
