@@ -136,12 +136,17 @@ module.exports = {
 
 	async orderHistory(req, res) {
 		const { userId } = req.user;
-		console.log(userId);
 		const data = await Carts.findAll({
 			where: {
 				user_id: userId,
-				is_payment: true,
+				// is_payment: true,
 			},
+			include: [
+				{
+					model: Products,
+					as: "product_detail",
+				},
+			],
 		});
 
 		if (data.length)
